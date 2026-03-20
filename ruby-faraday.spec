@@ -5,15 +5,19 @@
 %define pkgname faraday
 Summary:	HTTP/REST API client library
 Name:		ruby-%{pkgname}
-Version:	0.9.0
+Version:	2.14.1
 Release:	1
 License:	MIT
 Group:		Development/Languages
-Source0:	https://rubygems.org/gems/%{pkgname}-%{version}.gem
-# Source0-md5:	f77914db9c4d4e8b2090447ec84ea746
-URL:		https://github.com/lostisland/faraday
+Source0:	https://rubygems.org/downloads/%{pkgname}-%{version}.gem
+# Source0-md5:	01e6b27ae2d0069be15fa8aec3bc81d9
+URL:		https://lostisland.github.io/faraday
 BuildRequires:	rpm-rubyprov
 BuildRequires:	rpmbuild(macros) >= 1.665
+Requires:	ruby-faraday-net_http >= 2.0
+Requires:	ruby-faraday-net_http < 3.5
+Requires:	ruby-json
+Requires:	ruby-logger
 %if %{with tests}
 BuildRequires:	lsof
 BuildRequires:	rubygem(minitest)
@@ -26,15 +30,7 @@ BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
-HTTP/REST API client library
-
-%package doc
-Summary:	Documentation for %{name}
-Group:		Documentation
-Requires:	%{name} = %{version}-%{release}
-
-%description doc
-Documentation for %{name}
+HTTP/REST API client library.
 
 %prep
 %setup -q -n %{pkgname}-%{version}
@@ -46,8 +42,8 @@ Documentation for %{name}
 %if %{with tests}
 # The test suite is ran by a custom bash script.
 # Skip test check until this is resolved.
-# https://github.com/lostisland/faraday/blob/v0.9.0/script/test
-ruby -Ilib:test -e 'Dir.glob "./test/**/*_test.rb", &method(:require)'
+# https://github.com/lostisland/faraday/blob/main/script/test
+%{__ruby} -Ilib:test -e 'Dir.glob "./test/**/*_test.rb", &method(:require)'
 %endif
 
 %install
@@ -66,9 +62,3 @@ rm -rf $RPM_BUILD_ROOT
 %{ruby_vendorlibdir}/%{pkgname}.rb
 %{ruby_vendorlibdir}/%{pkgname}
 %{ruby_specdir}/%{pkgname}-%{version}.gemspec
-
-%if %{with doc}
-%files doc
-%defattr(644,root,root,755)
-%doc CHANGELOG.md CONTRIBUTING.md
-%endif
